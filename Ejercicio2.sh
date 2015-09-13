@@ -1,5 +1,4 @@
 #!/bin/bash/
-#!/bin/bash
 
 # *******************************COMIENZA EL BLOQUE DE FUNCIONES
 
@@ -100,8 +99,16 @@ archivoSinIgnorar(){
 		declare -A array
 		while read linea
 		do
-			echo "$linea"
+			if [ "${array[$linea]}" = "" ]
+			then
+				array["$linea"]="0"
+			fi
+			((array["$linea"]=${array[$linea]}+1))
 		done < "$1"
+		for hola in "${!arrayAux[@]}"
+		do
+		   echo "$hola 					${array[$hola]}"
+		done
 }
 
 # *******************************FINALIZA EL BLOQUE DE FUNCIONES
