@@ -97,6 +97,7 @@ archivoIgnorar(){
 	echo "$hola ${array[$hola]}"
 	done
 	IFS=' '
+	grabarEnArchivo $array
 
 }
 
@@ -116,6 +117,21 @@ for hola in "${!array[@]}"
 do
 echo "$hola ${array[$hola]}"
 done
+}
+
+
+grabarEnArchivo(){
+	$array=$1
+	#while [[ ${#array[*]} > 2 ]]; do
+	#	echo "Juan maricon come pinguinos"
+		
+	#done
+	echo "la longitud del array es ${#array[*]} antes"
+	unset ${array["HOLA MUNDO"]}
+	echo "la longitud del array es ${#array[*]}"
+	#for (( i = 0; i < ${#array[*]} ; i++ )); do
+		#echo "Juan maricon come pinguinos"
+	#done
 }
 
 
