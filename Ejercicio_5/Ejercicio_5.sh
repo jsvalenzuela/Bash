@@ -108,6 +108,6 @@ if [ $# -le 2 ]; then
 	cat $archivo 
 else
 #Filtra por los parametros de filtro 
-	sed -ne "/^[$3-$4]/p" "$archivo">"archivito.txt"
-	leerArchivo "archivito.txt"
+	sed -ne "/^[$3-$4]/p" "$archivo">"Archivo.txt"
+	leerArchivo "Archivo.txt"
 fi
