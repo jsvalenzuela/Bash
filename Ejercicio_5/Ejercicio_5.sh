@@ -50,23 +50,18 @@ FicheroInvalido()
 	ModoDeUso
 }
 
-validarFiltro()
-{
-	re='[a-zA-Z]'
-	if [[ ! $3 =~ $re ]]; then
-		echo "Error el fltro debe ser una letra";		
-		ModoDeUso
-	fi
-	if [[ ! $4 =~ $re ]]; then
-		echo "Error el fltro debe ser una letra\n";		
-		ModoDeUso
-	fi
+leerArchivo(){
+	while read linea
+	do
+		echo $linea
+	done <"$1"
 }
+
 ############################### Programa Principal ########################################
 
 #verificamos si la cantidad de argumentos es distinta de 1
 
-if [ $# -lt 1 ]; then 
+if [ $# -lt 1 -o $# -gt 4 ]; then 
 	Error #Error cantidad de parametros
 fi
 
@@ -75,7 +70,6 @@ if [ "$1" = "-help" -o "$1" = "-?" -o "$1" = "-h" ]; then
 fi
 
 obtienePath $1
-validarFiltro
 
 if [ ! -d $directorio ]; then 
 	DirectorioInvalido
@@ -100,10 +94,20 @@ if [ ! -s $1 ]; then
 	exit 1
 fi
 
+
+#Validacion de Rango de filtro
+if [[ ! -z $4 && ! -z $3 ]]; then
+	if [ $4 \< $3 ]; then 
+		echo "Rango invalido"
+		ModoDeUso
+	fi
+fi
+
 if [ $# -le 2 ]; then 
 #Si no pasa los parametros de filtro muestra todo el archivo
 	cat $archivo 
 else
 #Filtra por los parametros de filtro 
-	sed -ne "/^[$3-$4]/p" "$archivo" 
+	sed -ne "/^[$3-$4]/p" "$archivo">"archivito.txt"
+	leerArchivo "archivito.txt"
 fi
