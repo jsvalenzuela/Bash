@@ -94,9 +94,9 @@ if [ ! -s $archivoPersonas -o ! -s $archivoAcronimos ]; then
 fi
 
 #$archivoAcronimos
-awk -f prueba.awk $archivoPersonas 
+awk -f personas.awk $archivoPersonas 
 
-awk -f prueba2.awk $archivoAcronimos
+awk -f acronimos.awk $archivoAcronimos
 sleep 15
 personas=`sort salida1`
 acronimos=`sort salida2`
