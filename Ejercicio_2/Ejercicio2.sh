@@ -1,4 +1,8 @@
 #!/bin/bash/
+
+
+
+
 # *******************************COMIENZA EL BLOQUE DE FUNCIONES
 # ACLARACIONES ·$1 ES EL PRIMER PARAMETRO QUE SE PASA, SEA A LA FUNCION O A LA LLAMADA DEL ARCHIVO BASH
 # ·LA VARIABLE ESPECIAL $# CONTIENE LA CANTIDAD DE PARAMETROS QUE SE LE PASO AL LLAMAR AL BASH
@@ -78,24 +82,19 @@ echo "$1"
 pasarAminuscula(){
 	echo "hola soy una minuscula"
 }
+
 archivoIgnorar(){
-	#echo "$1"
 	IFS='<<'
 	declare -A array
 	while read linea
 	do
 		upperCase "$linea"
-		echo "$cadena"
 		if [ "${array["$cadena"]}" = "" ]
 		then
 		array["$cadena"]="0"
 		fi
 	((array["$cadena"]=${array[$cadena]}+1))
 	done < "$1"
-	for hola in "${!array[@]}"
-	do
-	echo "$hola ${array[$hola]}"
-	done
 	IFS=' '
 	grabarEnArchivo $array
 
@@ -121,21 +120,30 @@ done
 
 
 grabarEnArchivo(){
-	$array=$1
-	#while [[ ${#array[*]} > 2 ]]; do
-	#	echo "Juan maricon come pinguinos"
-		
-	#done
-	echo "la longitud del array es ${#array[*]} antes"
-	unset ${array["HOLA MUNDO"]}
-	echo "la longitud del array es ${#array[*]}"
-	#for (( i = 0; i < ${#array[*]} ; i++ )); do
-		#echo "Juan maricon come pinguinos"
-	#done
+	i=0
+	declare -a arrayAuxiliar
+	
+	#k es una variable auxiliar para indicar la posicion en la que se insertara todo el texto dentro de array auxiliar contento
+	for k in "${!array[@]}"
+	do
+		arrayAuxiliar[${i}]="${array[${k}]}""+""$k"
+		((i++))
+	done
+	for ((i=0; i<${#arrayAuxiliar[@]}; i++ ))
+	do
+		${arrayAuxiliar[${i}]} > temp
+		#echo $i >> "gabytraba.txt"
+		#echo ${arrayAuxiliar[${i}]} >> "gabytraba.txt"
+	done | sort temp
+	
+	echo "$temp"
+	if [ ${arrayAuxiliar[0]} \< ${arrayAuxiliar[1]} ]
+	then
+		echo "${arrayAuxiliar[0]} es menor que ${arrayAuxiliar[1]}"
+	fi
+	
+	
 }
-
-
-
 
 
 # *******************************FINALIZA EL BLOQUE DE FUNCIONES
