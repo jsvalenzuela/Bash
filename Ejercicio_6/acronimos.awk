@@ -1,23 +1,10 @@
 #!/bin/awk
-BEGIN{
-	FS=" ";
-	campos=3;
+$1 ~ /[^PC]/ || length($1) != 1{
+	print "ERROR (Registro " NR "): El tipo de registro debe ser \"P\" o \"C\""
 }
-{
-{
-	if($1!="" && $2!="" && $3!=""){
-		#Validacion Acronimo de paises
-		if(match($2,/[A-Z][A-Z]/)){
-			if(NF == campos){
-				#validacion de cantidad de campos del registro 
-				acronimos[$2] = acronimos[$2] $3 "|"
-			}
-		}	
-	}
+$2 ~ /[^A-Z][^A-Z]/ || length($2) != 2{
+	print "ERROR (Registro " NR "): El acronimo es incorrecto"
 }
-}
-END{
-	for(key in acronimos){
-	print key "|" acronimos[key] > "temp2"
-	}
+$3 ~ /[^A-Za-zñÑáéíóúÁÉÍÓÚ\- ]/{
+	print "ERROR (Registro " NR "): El nombre del pais es invalido"
 }
