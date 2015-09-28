@@ -3,23 +3,23 @@
 
 ########################################################################
 # PROGRAM-ID.  ejercicio6.sh					                       #
-# OBJETIVO DEL PROGRAMA: filtre los productos que comienzan con	       # 
-# una letra determinada.			                                   #
+# OBJETIVO DEL PROGRAMA: Generar un listado de informacion de una base #
+# de datos de personas			                                       #
 # TIPO DE PROGRAMA: .sh                                                #
-# ARCHIVOS DE ENTRADA: salida.txt                                      #
-# ARCHIVOS DE SALIDA : N/A			                                   #
+# ARCHIVOS DE ENTRADA: BaseDeDatos.file, acronimos.file                #
+# ARCHIVOS DE SALIDA : salisda.txt			                           #
 # ALUMNOS : -Bogado, Sebastian                                         #
 #           -Camacho, Manfred					                       #
 #           -Gonzalez, Gustavo                                         #
 #           -Rey, Juan Cruz                                            #
 #           -Valenzuela, Santiago 				                       #
 # COMENTARIOS: N/A						                               #
-# EjemploEj.:.	./Ejercicio_6.sh ./DocumentoA.txt ./DocumentoB.txt     #
+# EjemploEj.:.	./ejercicio6.sh ./BaseDeDatos.file ./Acronimos.file    #
 ########################################################################
 #----------------------------------Funciones----------------------------------------------
 ModoDeUso()
 {
-	echo "Uso:" $0 "./personas.file ./acronimos.file"               	
+	echo "Uso:" $0 "./baseDeDatos.file ./acronimos.file"               	
 	echo "Con -h o -? o -help esta ayuda"
 	exit 1
 } 
@@ -124,4 +124,3 @@ sort temp3 | awk -f grabar.awk > salida.txt
 rm temp1
 rm temp2
 rm temp3
-
