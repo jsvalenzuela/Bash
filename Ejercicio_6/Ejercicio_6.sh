@@ -93,12 +93,15 @@ if [ ! -s $archivoPersonas -o ! -s $archivoAcronimos ]; then
 	exit 1
 fi
 
-#$archivoAcronimos
 awk -f personas.awk $archivoPersonas 
-
 awk -f acronimos.awk $archivoAcronimos
-sleep 15
-personas=`sort salida1`
-acronimos=`sort salida2`
-join -t'|' -12 <(sort -t'|'  $personas) $acronimos
+
+personas=`sort temp1`
+acronimos=`sort temp2`
+
+printf "%s\n" "${personas[@]}" > temp1
+printf "%s\n" "${acronimos[@]}" > temp2
+
+ 
+#join -t'|' -12 <(sort -t'|'  $personas) $acronimos
 
