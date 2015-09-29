@@ -104,7 +104,19 @@ DIR=$1
 cd $DIR
 recorrer_directorio $DIR $2
 }
+
+
+
 #fin bloque funciones
+
+#compruebo la cantidad de parametros recibidos
+if [ $# -lt 2 ]
+then
+  echo "Error en los parametros. Recuerde que minimamente necesita 2 parametros"
+  exit
+fi
+
+
 if [ -f $1 ]; then
   esArchivoDeBash $1 $2
 elif [ -d $1  ]; then 
