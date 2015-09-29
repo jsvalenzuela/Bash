@@ -116,6 +116,17 @@ then
   exit
 fi
 
+#cadena va a contener el ultimo elemento que se paso por parametro
+cadena="${!#}"
+extencion=$(echo "$cadena" | rev | cut -d'.' -f1 | rev)
+# COMPREUBO QUE EL ULTIMO PARAMETRO SEA .log
+if [ "$extencion" != "log" ]
+  then
+  echo "El ultimo archivo debe ser un .log para mas informacion utilice el help con el parametro -h"
+  exit 
+fi
+# aca terminan las primeras validaciones
+
 
 if [ -f $1 ]; then
   esArchivoDeBash $1 $2
