@@ -102,10 +102,11 @@ sed 's/|$//' temp1 > temp3
 #valido los acronimos
 awk -f acronimos.awk $pathCompletoAcronimos 
 
+#Elimino espacios en blanco iniciales y finales.
 #Elimino las ciudades (registros que empiezan por C) y para los paises elimino el primer
 #campo de los registros (P). Finalmente reemplazo los espacios por el separador "|" y 
 #grabo los resultados en el archivo temp2
-sed '/^C/d;s/^P //;s/ /|/' $pathCompletoAcronimos > temp2 
+sed 's/^[ \t]*//;s/[ \t]*$//;/^C/d;s/^P //;s/ /|/' $pathCompletoAcronimos > temp2 
 
 #Seteo mi nuevo separador interno de campos para usarlos con read
 IFS="|"

@@ -1,10 +1,10 @@
 #!/bin/awk
 $1 ~ /[^PC]/ || length($1) != 1{
-	print "ERROR (Registro " NR "): El tipo de registro debe ser \"P\" o \"C\""
+	print "ERROR ("$1"): El tipo de registro debe ser \"P\" o \"C\""
 }
 $2 ~ /[^A-Z][^A-Z]/ || length($2) != 2{
-	print "ERROR (Registro " NR "): El acronimo es incorrecto"
+	print "ERROR ("$2"): El acronimo es incorrecto"
 }
 $3 ~ /[^A-Za-zñÑáéíóúÁÉÍÓÚ\- ]/{
-	print "ERROR (Registro " NR "): El nombre del pais es invalido"
+	print "ERROR ("$3"): El nombre del pais es invalido"
 }
