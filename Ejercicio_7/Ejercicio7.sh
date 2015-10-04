@@ -20,7 +20,7 @@ func_start()
 
 		chmod +rwx /tmp/datostemporales.txt
 
-		#echo "$path_origen" > /tmp/demfifo
+		#echo "$path_origen" > /tmp/demfifo 
 		#echo "$path_destino" > /tmp/demfifo
 		#echo "$intervalo" > /tmp/demfifo
 		echo $path_origen >> /tmp/datostemporales.txt
