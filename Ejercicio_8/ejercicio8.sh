@@ -128,14 +128,24 @@ do
 	awk -v pal=$palabra -f corregirOrtografia.awk $pathCompletoTexto >> $3
 done < temp
 
-#ordeno el archivo de salida de acuerdo a el numero de linea
-cat $3 | sort -n -o $3
+#PRIMERA LETRA DE CASA FRASE EN MAYUSCULA
+#Se toma como registro a las frases que terminen con punto o un salto de linea, y guarda 
+#en la salida
+awk -F "." -f corregirMayusculas.awk $pathCompletoTexto >> $3
+awk -F "\n" -f corregirMayusculas.awk $pathCompletoTexto >> $3
+
+#CORRECCION DE SIGNOS DE PUNTUACIon
+awk -f corregirPuntuacion.awk  $pathCompletoTexto >> $3
+
+#ordeno el archivo de salida de acuerdo a el numero de linea y elimino los duplicados 
+#generados al corregir mayusculas dos veces
+cat $3 > temp1
+sort -n temp1 | uniq > $3
 
 #verifico si hubo o no errores
 if [[ $(wc -l < $3) = 1 ]]; then
 	echo "SIN ERRORES" > $3
 fi
-#cat $3 | awk 'END{ if(NR == 1) print "SIN ERRORES"}' > sal
 
 rm temp
 rm temp1
