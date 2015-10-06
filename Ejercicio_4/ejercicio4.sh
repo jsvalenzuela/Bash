@@ -10,14 +10,14 @@ cantSeparadores=`awk -v cant=$cantLineas -F "|" 'NR==cant{print NF}' yyyy.mm.ch`
 if [ "$cantSeparadores" = 5 ]; then
     sed -i "$ d" yyyy.mm.ch
 fi
-#grabo la hora que ingresa usuario en el archivo
+#limpio archivo reportes anual
 limpiarArchivo=`> reporteanual`
-cadena="$1|$2"
+cadena="$1|$2"  #concateno la fecha y horas que ingresa usuario 
 cantHoras=`echo $cadena | awk -F "|" -f horas.awk` #calculo la cantidad de horas que trabajo redirecionando flujo
 registro=$cadena"|"$cantHoras
 echo $registro>>$file  #grabo en la ultima linea 
 cat $file | awk -F "|" '{print substr($1,1,10)}' | sort -n -t "/"  -k3 -k2 -k1 -o $file $file  #ordeno el archivo
-awk -v anioParametro=$4 -v mesParametro=$3 -F "|" -f reporte.awk yyyy.mm.ch
+awk -v anioParametro=$4 -v mesParametro=$3 -F "|" -f reporte.awk yyyy.mm.ch   #creo reportes
 }
 
 scriptErrorParametro(){
@@ -126,7 +126,7 @@ elif [ ! -w  $mesesPath -a ! -r $mesesPath ]; then
     exit
 fi
 
-fecha=${2:1:9}
+fecha=${2:1:9} #extraigo la fecha que ingresa usuario
 fechaArchivo=`grep $fecha $mesesPath`
 if [ -n "$fechaArchivo" ];then
   echo La fecha ingresada ya existe en el archivo
