@@ -112,7 +112,12 @@ esac
 
 anualPath="./reporteanual"
 if [ ! -e $anualPath ]; then
-  touch $mesesPath  #validar si pude
+   touch $anualPath 2>/dev/null
+   estado=$?
+   if [ "$estado" != 0 ]; then
+     echo no se pudo crear
+     exit
+   fi
 elif [ ! -w  $anualPath -a ! -r $anualPath ]; then
    echo no tiene permisos sobre anual
    exit
@@ -120,7 +125,12 @@ fi
 
 mesesPath="./yyyy.mm.ch"
 if [ ! -e $mesesPath ]; then
-  touch $mesesPath  #validar si pude
+  touch $mesesPath 2>/dev/null
+  estado=$?
+   if [ "$estado" != 0 ]; then
+     echo no se pudo crear
+     exit
+   fi
 elif [ ! -w  $mesesPath -a ! -r $mesesPath ]; then
    echo no tiene permisos sobre mensual
     exit
