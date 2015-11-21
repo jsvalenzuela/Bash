@@ -24,6 +24,6 @@ BEGIN{
 END{
 	#almaceno los registros agrupados por su acronimo en un archivo temporal
 	for(key in personas){
-		print key "|" personas[key] > "temp1" 
+		print key "|" personas[key] > temp1
 	}
 }

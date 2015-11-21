@@ -19,8 +19,18 @@
 #----------------------------------Funciones----------------------------------------------
 ModoDeUso()
 {
-	echo "Uso:" $0 "./baseDeDatos.file ./acronimos.file"               	
-	echo "Con -h o -? o -help esta ayuda"
+	echo
+	echo "Uso:" $0 " BASEDEDATOS ACRONIMOS"  
+	echo             	
+	echo "Opciones:"
+	echo "	-?, -h, -help		muestra esta ayuda y sale"
+	echo
+	echo "Ejemplos:"
+	echo
+	echo $0 " ./bd/personas ./acronimos"
+	echo 
+	echo $0 " -?"
+	echo
 	exit 1
 } 
 
@@ -33,11 +43,9 @@ Error()
 obtienePath() 
 {
 	pathCompletoPersonas=$1
-	archivoPersonas=`basename $pathCompletoPersonas`
 	directorioPersonas=`dirname $pathCompletoPersonas`
 
 	pathCompletoAcronimos=$2
-	archivoAcronimos=`basename $pathCompletoAcronimos`
 	directorioAcronimos=`dirname $pathCompletoAcronimos`
 
 }
@@ -92,12 +100,18 @@ if [ ! -s $pathCompletoPersonas -o ! -s $pathCompletoAcronimos ]; then
 	exit 1
 fi
 
+#Creo tres archivos temporales con un nombre aleaorio
+temp1=$(mktemp)
+temp2=$(mktemp)
+temp3=$(mktemp)
+
 #ordeno el archivo personas por nombre, luego con personas.awk valido y agrupo a los 
 #registros de acuerdo al pais de nacimiento y guardo el resultado en el archivo temp1
-sort $pathCompletoPersonas | awk -f personas.awk 
+
+sort $pathCompletoPersonas | awk -f personas.awk -v temp1=$temp1 
 
 #Elimino el pipe final del archivo temp1 que fue agregado en personas.awk y grabo en temp3
-sed 's/|$//' temp1 > temp3
+sed 's/|$//' $temp1 > $temp3
 
 #valido los acronimos
 awk -f acronimos.awk $pathCompletoAcronimos 
@@ -106,7 +120,7 @@ awk -f acronimos.awk $pathCompletoAcronimos
 #Elimino las ciudades (registros que empiezan por C) y para los paises elimino el primer
 #campo de los registros (P). Finalmente reemplazo los espacios por el separador "|" y 
 #grabo los resultados en el archivo temp2
-sed 's/^[ \t]*//;s/[ \t]*$//;/^C/d;s/^P //;s/ /|/' $pathCompletoAcronimos > temp2 
+sed 's/^[ \t]*//;s/[ \t]*$//;/^C/d;s/^P //;s/ /|/' $pathCompletoAcronimos > $temp2 
 
 #Seteo mi nuevo separador interno de campos para usarlos con read
 IFS="|"
@@ -115,13 +129,13 @@ IFS="|"
 while read acronimo nombre
 do
 	#Reemplazo el acronimo por su nombre en temp3
-	sed -i "s/$acronimo/$nombre/" temp3
-done < temp2
+	sed -i "s/$acronimo/$nombre/" $temp3
+done < $temp2
 
-#ordeno temp3 por el pais y grabo la salida en salida.txt 
-sort temp3 | awk -f grabar.awk > salida.txt
+#ordeno temp3 por el pais y muestro por pantalla
+sort $temp3 | awk -f grabar.awk
 
 #Remuevo los archivos temporales
-rm temp1
-rm temp2
-rm temp3
+rm $temp1
+rm $temp2
+rm $temp3
