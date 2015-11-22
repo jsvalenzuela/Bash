@@ -50,6 +50,7 @@ cadena=(`echo "$1" | tr [:upper:] [:lower:]`)
 archivoIgnorar(){
 	declare -A array
 	#voy leyendo las lineas y en caso de haber coincidencia las empiezo a incrementar
+	IFS='\'	
 	while read linea
 	do
 		#llamo a esta funcion que las pasa magicamente a mayuscula
@@ -64,7 +65,8 @@ archivoIgnorar(){
 	for k in "${!array[@]}"
 	do
 		echo ${array["$k"]}'.'$k  
-	done | sort -k1,1nr -k2,2
+	done | sort -k1,1nr -k2,2	 
+IFS=" "
 }
 
 archivoSinIgnorar(){
@@ -80,9 +82,8 @@ done < "$1"
 	for k in "${!array[@]}"
 	do
 		echo ${array["$k"]}'.'$k  
-	done | sort -k1,1nr -k2,2 -t\n 
+	done | sort -k1,1nr -k2,2 
 }
-
 verificarPermisosDeLectura(){
 	if [ -r $1 ]
 	then 
