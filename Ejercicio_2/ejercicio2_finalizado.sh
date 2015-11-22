@@ -1,7 +1,4 @@
-#!/bin/bash/
-
-
-
+#!/bin/bash
 
 # *******************************COMIENZA EL BLOQUE DE FUNCIONES
 # ACLARACIONES ·$1 ES EL PRIMER PARAMETRO QUE SE PASA, SEA A LA FUNCION O A LA LLAMADA DEL ARCHIVO BASH
@@ -9,7 +6,7 @@
 # ·Se puede poner clear para limpiar la pantalla
 # -r si se puede leer... comprobar eso.
 scriptErrorParametro(){
-clear
+
 echo "Debe ingresar aunque sea un parametro. Para mas informacion, utilice el help."
 echo "Por ejemplo"
 echo "bash ejercicio2.sh -h"
@@ -17,7 +14,7 @@ echo "bash ejercicio2.sh -help"
 echo "bash ejercicio2.sh -?"
 }
 ofrecerAyuda(){
-clear
+
 echo "Debe pasarse como parametro el nombre del directorio de entrada y el de salida. Debe escapearse los espacios de la siguiente forma: '\ '"
 echo "Para ejecutar correctamente, debe ingresar con el siguiente formato"
 echo "bash script.sh [archivo de entrada] [-i o -ni]"
@@ -67,11 +64,8 @@ archivoIgnorar(){
 	for k in "${!array[@]}"
 	do
 		echo ${array["$k"]}'.'$k  
-	# funciona medio raro... -r implica que se ordena a la inversa, -n que se utiliza los numeros o el peso si se quiere decir -k@ indica cual es el campo por el cual va a ser evaluado
-	done | sort -rn -k1
-	IFS=" "
+	done | sort -k1,1nr -k2,2
 }
-
 
 archivoSinIgnorar(){
 declare -A array
@@ -86,7 +80,7 @@ done < "$1"
 	for k in "${!array[@]}"
 	do
 		echo ${array["$k"]}'.'$k  
-	done | sort -rn -k1
+	done | sort -k1,1nr -k2,2 -t\n 
 }
 
 verificarPermisosDeLectura(){
