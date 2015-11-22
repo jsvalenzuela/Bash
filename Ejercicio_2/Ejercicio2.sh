@@ -6,10 +6,9 @@
 # *******************************COMIENZA EL BLOQUE DE FUNCIONES
 # ACLARACIONES ·$1 ES EL PRIMER PARAMETRO QUE SE PASA, SEA A LA FUNCION O A LA LLAMADA DEL ARCHIVO BASH
 # ·LA VARIABLE ESPECIAL $# CONTIENE LA CANTIDAD DE PARAMETROS QUE SE LE PASO AL LLAMAR AL BASH
-# ·Se puede poner clear para limpiar la pantalla
 # -r si se puede leer... comprobar eso.
 scriptErrorParametro(){
-clear
+echo " "
 echo "Debe ingresar aunque sea un parametro. Para mas informacion, utilice el help."
 echo "Por ejemplo"
 echo "bash ejercicio2.sh -h"
@@ -17,7 +16,7 @@ echo "bash ejercicio2.sh -help"
 echo "bash ejercicio2.sh -?"
 }
 ofrecerAyuda(){
-clear
+echo " "
 echo "Debe pasarse como parametro el nombre del directorio de entrada y el de salida. Debe escapearse los espacios de la siguiente forma: '\ '"
 echo "Para ejecutar correctamente, debe ingresar con el siguiente formato"
 echo "bash script.sh [archivo de entrada] [-i o -ni]"
@@ -34,6 +33,7 @@ echo "bash ejercicio2.sh archivito.txt -ni"
 echo "en este caso, no ignora si es mayuscula o minuscula. Por defecto no se ignoran si son mayusculas o minusculas"
 exit 0
 }
+
 comprobarAyuda(){
 if [ "$1" = "-help" -o "$1" = "-?" -o "$1" = "-h" ]
 then
@@ -41,110 +41,107 @@ ofrecerAyuda
 fi
 return
 }
+
 upperCase(){
-cadena=(`echo "$1" | tr [:lower:] [:upper:]`)
+	IFS='°'
+	cadena=(`echo "$1" | tr [:lower:] [:upper:]`)
+	IFS=" "
 }
 lowerCase(){
-cadena=(`echo "$1" | tr [:upper:] [:lower:]`)
-}
-ComprobarArchivoRegular(){
-if [ -f "$1" ]
-then
-TrabajarArchivo "$1"
-fi
-echo "$1 No existe o no es un archivo regular."
-exit 0
-}
-ComprobarPermisos(){
-if [ ! -r $1 ]
-then
-echo "No se poseen los permisos de lectura necesarios"
-exit 0
-fi
-return
-}
-
-
-
-ComprobarCadena(){
-if [ "$(echo $1 | grep -E '^[0-9]*$')" ]
-then
-return 1
-fi
-return 0
-}
-
-menasjeError(){
-echo "$1"
-}
-
-
-pasarAminuscula(){
-	echo "hola soy una minuscula"
+	IFS='°'
+	cadena=(`echo "$1" | tr [:upper:] [:lower:]`)
+	IFS=" "
 }
 
 archivoIgnorar(){
-	IFS='<<'
 	declare -A array
+	#voy leyendo las lineas y en caso de haber coincidencia las empiezo a incrementar
 	while read linea
 	do
+		echo "$linea"
+		#llamo a esta funcion que las pasa magicamente a mayuscula
 		upperCase "$linea"
+		#Si el esa posición del array esta vacía, significa que no hay absolutamente una linea hasta ese momento y la pone en cero. Porque sino, produce error
 		if [ "${array["$cadena"]}" = "" ]
 		then
-		array["$cadena"]="0"
+			array["$cadena"]="0"
 		fi
 	((array["$cadena"]=${array[$cadena]}+1))
 	done < "$1"
-	IFS=' '
-	grabarEnArchivo $array
-
+	for k in "${!array[@]}"
+	do
+		echo ${array["$k"]}'.'$k  
+	# funciona medio raro... -r implica que se ordena a la inversa, -n que se utiliza los numeros o el peso si se quiere decir -k@ indica cual es el campo por el cual va a ser evaluado
+	done | sort -rn -k1
+	IFS=" "
 }
 
 
 archivoSinIgnorar(){
-echo "$1"
 declare -A array
 while read linea
 do
+	echo "Son todos cagones"
 	if [ "${array[$linea]}" = "" ]
 	then
-	array["$linea"]="0"
+		array["$linea"]="0"
 	fi
-((array["$linea"]=${array[$linea]}+1))
+	((array["$linea"]=${array[$linea]}+1))
 done < "$1"
-for hola in "${!array[@]}"
-do
-echo "$hola ${array[$hola]}"
-done
-}
 
-
-grabarEnArchivo(){
-	i=0
-	declare -a arrayAuxiliar
-	
-	#k es una variable auxiliar para indicar la posicion en la que se insertara todo el texto dentro de array auxiliar contento
+declare -a arrayNumerico
+declare -a arrayPalabras
+i=0
 	for k in "${!array[@]}"
 	do
-		arrayAuxiliar[${i}]="${array[${k}]}""+""$k"
+		arrayPalabras["$i"]=$k  
+		((arrayNumerico["$i"]=${array["$k"]}))
 		((i++))
 	done
-	for ((i=0; i<${#arrayAuxiliar[@]}; i++ ))
+	ordenar
+	for((i=0;i<longitud;i++))
 	do
-		${arrayAuxiliar[${i}]} > temp
-		#echo $i >> "gabytraba.txt"
-		#echo ${arrayAuxiliar[${i}]} >> "gabytraba.txt"
-	done | sort temp
-	
-	echo "$temp"
-	if [ ${arrayAuxiliar[0]} \< ${arrayAuxiliar[1]} ]
-	then
-		echo "${arrayAuxiliar[0]} es menor que ${arrayAuxiliar[1]}"
-	fi
-	
-	
+		echo arrayNumerico["$i"] "...." arrayPalabras["$i"]
+	done
 }
 
+
+ordenar(){
+	declare -i posMax
+	longitud=${#arrayNumerico[@]}
+	auxiliarNumero=0
+	auxiliarPalabra=""
+	for((i=0;i<longitud;i++))
+	do
+		posMax=$i
+		for((j=i;j<longitud;j++))
+		do
+			if (("${arrayNumerico["$j"]}" >= "${arrayNumerico["$posMax"]}"))
+			then
+				if [ "${arrayPalabras["$j"]}" < "${arrayPalabras["$posMax"]}" ]
+				then
+					posMax=$j
+				fi	
+			fi
+		done
+		auxiliarNumero=${arrayNumerico["$i"]}
+		auxiliarPalabra=${arrayPalabras["$i"]}
+		arrayNumerico["$i"]=${arrayNumerico["$posMax"]}
+		arrayPalabras["$i"]=${arrayPalabras["$posMax"]}
+		arrayNumerico["$posMax"]=auxiliarNumero
+		arrayPalabras["$posMax"]=auxiliarPalabra
+	done
+}
+
+verificarPermisosDeLectura(){
+	if [ -r $1 ]
+	then 
+		echo "$1 tiene permisos de lectura"
+		return
+	fi
+	echo "$1 no tiene permisos de lectura, por favor verifique los permisos y cambielos en caso de que sea deseado ser procesado ese archivo"
+	exit
+}
 
 # *******************************FINALIZA EL BLOQUE DE FUNCIONES
 # *******************************COMIENZA EL BLOQUE DEL PROGRAMA
@@ -152,14 +149,16 @@ grabarEnArchivo(){
 case $# in
 1)
 	comprobarAyuda
+	verificarPermisosDeLectura "$1"
 	archivoSinIgnorar "$1"
 	;;
 2)
 	case "$2" in
-	"-i") archivoIgnorar "$1"
+	"-i") 	verificarPermisosDeLectura "$1"
+			archivoIgnorar "$1"
 	;;
-	"-ni") 
-		archivoSinIgnorar "$1"
+	"-ni") 	verificarPermisosDeLectura "$1"
+			archivoSinIgnorar "$1"
 		;;
 *)
 	mensajeError "Error en el segundo parametro utilice el help [-h]"
