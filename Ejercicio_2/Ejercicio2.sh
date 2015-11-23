@@ -1,14 +1,12 @@
-#!/bin/bash/
-
-
-
+#!/bin/bash
 
 # *******************************COMIENZA EL BLOQUE DE FUNCIONES
 # ACLARACIONES ·$1 ES EL PRIMER PARAMETRO QUE SE PASA, SEA A LA FUNCION O A LA LLAMADA DEL ARCHIVO BASH
 # ·LA VARIABLE ESPECIAL $# CONTIENE LA CANTIDAD DE PARAMETROS QUE SE LE PASO AL LLAMAR AL BASH
+# ·Se puede poner clear para limpiar la pantalla
 # -r si se puede leer... comprobar eso.
 scriptErrorParametro(){
-echo " "
+
 echo "Debe ingresar aunque sea un parametro. Para mas informacion, utilice el help."
 echo "Por ejemplo"
 echo "bash ejercicio2.sh -h"
@@ -16,7 +14,7 @@ echo "bash ejercicio2.sh -help"
 echo "bash ejercicio2.sh -?"
 }
 ofrecerAyuda(){
-echo " "
+
 echo "Debe pasarse como parametro el nombre del directorio de entrada y el de salida. Debe escapearse los espacios de la siguiente forma: '\ '"
 echo "Para ejecutar correctamente, debe ingresar con el siguiente formato"
 echo "bash script.sh [archivo de entrada] [-i o -ni]"
@@ -43,12 +41,12 @@ return
 }
 
 upperCase(){
-	IFS='°'
+	IFS="#!"
 	cadena=(`echo "$1" | tr [:lower:] [:upper:]`)
 	IFS=" "
 }
 lowerCase(){
-	IFS='°'
+	IFS="#!"
 	cadena=(`echo "$1" | tr [:upper:] [:lower:]`)
 	IFS=" "
 }
@@ -56,35 +54,34 @@ lowerCase(){
 archivoIgnorar(){
 	declare -A array
 	#voy leyendo las lineas y en caso de haber coincidencia las empiezo a incrementar
+	IFS='\'	
 	while read linea
 	do
-		echo "$linea"
 		#llamo a esta funcion que las pasa magicamente a mayuscula
 		upperCase "$linea"
 		#Si el esa posición del array esta vacía, significa que no hay absolutamente una linea hasta ese momento y la pone en cero. Porque sino, produce error
 		if [ "${array["$cadena"]}" = "" ]
 		then
-			array["$cadena"]="0"
+		array["$cadena"]="0"
 		fi
 	((array["$cadena"]=${array[$cadena]}+1))
 	done < "$1"
 	for k in "${!array[@]}"
 	do
 		echo ${array["$k"]}'.'$k  
-	# funciona medio raro... -r implica que se ordena a la inversa, -n que se utiliza los numeros o el peso si se quiere decir -k@ indica cual es el campo por el cual va a ser evaluado
-	done | sort -rn -k1
-	IFS=" "
+	done | sort -k1,1nr -k2,2	 
+IFS=" "
 }
-
 
 archivoSinIgnorar(){
 declare -A array
+declare -a arrayPalabra
+declare -a arrayNumeros
 while read linea
 do
-	echo "Son todos cagones"
 	if [ "${array[$linea]}" = "" ]
 	then
-		array["$linea"]="0"
+	array["$linea"]="0"
 	fi
 	((array["$linea"]=${array[$linea]}+1))
 done < "$1"
@@ -98,13 +95,13 @@ i=0
 		((arrayNumerico["$i"]=${array["$k"]}))
 		((i++))
 	done
+	declare -i longitud
 	ordenar
 	for((i=0;i<longitud;i++))
 	do
-		echo arrayNumerico["$i"] "...." arrayPalabras["$i"]
+		echo ${arrayNumerico["$i"]} "...." ${arrayPalabras["$i"]}
 	done
 }
-
 
 ordenar(){
 	declare -i posMax
@@ -116,23 +113,26 @@ ordenar(){
 		posMax=$i
 		for((j=i;j<longitud;j++))
 		do
-			if (("${arrayNumerico["$j"]}" >= "${arrayNumerico["$posMax"]}"))
+			if [ ${arrayNumerico[$j]} -gt ${arrayNumerico[$posMax]} ]
 			then
-				if [ "${arrayPalabras["$j"]}" < "${arrayPalabras["$posMax"]}" ]
+				posMax=$j
+			fi
+			if [ ${arrayNumerico[$j]} -eq ${arrayNumerico[$posMax]} ]
+			then
+				if [ "${arrayPalabras[$j]}" \< "${arrayPalabras[$posMax]}" ]
 				then
 					posMax=$j
-				fi	
+				fi
 			fi
 		done
 		auxiliarNumero=${arrayNumerico["$i"]}
 		auxiliarPalabra=${arrayPalabras["$i"]}
 		arrayNumerico["$i"]=${arrayNumerico["$posMax"]}
 		arrayPalabras["$i"]=${arrayPalabras["$posMax"]}
-		arrayNumerico["$posMax"]=auxiliarNumero
-		arrayPalabras["$posMax"]=auxiliarPalabra
+		arrayNumerico["$posMax"]=$auxiliarNumero
+		arrayPalabras["$posMax"]=$auxiliarPalabra
 	done
 }
-
 verificarPermisosDeLectura(){
 	if [ -r $1 ]
 	then 
