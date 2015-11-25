@@ -1,6 +1,5 @@
 #!/bin/bash
 # Indica el shell con que se debe ejecutar el script
-clear
 ########################################################################
 # PROGRAM-ID.  ejercicio8.sh					                       #
 # OBJETIVO DEL PROGRAMA: Mini-verificador ortográfico, que permite     #
@@ -19,8 +18,22 @@ clear
 #----------------------------------Funciones----------------------------------------------
 ModoDeUso()
 {
-	echo "       Uso:" $0 "./texto.file ./diccionario.file [./salida.txt]"               
+	echo
+	echo $0 ": Mini-verificador ortográfico, que permite verificar el léxico utilizado en la redacción de un texto."
+	echo
+	echo "       Uso:" $0 " archivoDeTexto diccionario [archivoSalidaErrores]"               
 	echo "       Con -h o -? o -help esta ayuda"
+	echo
+	echo "IMPORTANTE: El formato del diccionario debe ser de una palabra por linea."
+	echo
+	echo "Ejemplos:"
+	echo
+	echo $0 " miArchivo.txt diccionario.dic" 
+	echo
+	echo $0 " miArchivo.txt diccionario.dic errores.err" 
+	echo
+	echo $0 " -?" 
+	echo
 	exit 1
 } 
 
@@ -103,51 +116,60 @@ fi
 
 
 #############################    PROGRAMA PRINCIPAL  #####################################
+#creo archivos temporales con nombre aleatorio
+
+temp1=$(mktemp)
+temp2=$(mktemp)
+temp3=$(mktemp)
+temp4=$(mktemp)
+
 #Elimino los caracteres especiales
-cat $pathCompletoTexto | sed -f eliminarCaracteres.sed > temp1
+cat $pathCompletoTexto | sed -f eliminarCaracteres.sed > $temp1
 
 #Convierto los espacios en saltos de linea del texto, lo ordeno, elimino palabras
-#repetidas ignorando case sensitive y guardo el resultado en temp1
-tr ' ' '\n' <  temp1 | sort | uniq -i > temp3
-
-#Ordeno el diccionario y lo almaceno en temp2
-sort $pathCompletoDiccionario > temp2
+#repetidas ignorando case sensitive y guardo el resultado en $temp3
+tr ' ' '\n' <  $temp1 | sort | uniq -i > $temp3
+#Ordeno el diccionario y lo almaceno en $temp2
+sort $pathCompletoDiccionario > $temp2
 
 #Comparo ambos archivos y me quedo solo con las palabras que no estan en el diccionario
-#luego con awk elimino los numeros para tener solo palabras y almaceno en temp
-comm -23 temp3 temp2 | awk '$0 ~ /[a-zA-Z]/ {print $0}' > temp
+#luego con awk elimino los numeros para tener solo palabras y almaceno en $temp4
+comm -23 $temp3 $temp2 | awk '$0 ~ /[a-zA-Z]/ {print $0}' > $temp4
 
 #Escribo la cabecera del archivo de salida
-echo "LINEA  PALABRA                        ERROR" > $3
+echo "ERROR       PALABRA                        LINEA" > $3
 
-#Leo cada palabra de mi archivo temp (donde estan las palabras no encontradas en el 
-#diccionario) y las busco en el texto original para obtener el nuemero de linea donde este
+#Leo cada palabra de mi archivo $temp4 (donde estan las palabras no encontradas en el 
+#diccionario y las busco en el texto original para obtener el numero de linea donde este
 #el error y guardo en el archivo de salida
 while read palabra
 do
-	awk -v pal=$palabra -f corregirOrtografia.awk $pathCompletoTexto >> $3
-done < temp
+	awk -v pal=$palabra -f corregirOrtografia.awk $temp1 >> $3
+done < $temp4
 
 #PRIMERA LETRA DE CASA FRASE EN MAYUSCULA
 #Se toma como registro a las frases que terminen con punto o un salto de linea, y guarda 
 #en la salida
+#primero convierto los puntos en saltos de linea para hacer la comparacion una sola vez
+
 awk -F "." -f corregirMayusculas.awk $pathCompletoTexto >> $3
 awk -F "\n" -f corregirMayusculas.awk $pathCompletoTexto >> $3
 
-#CORRECCION DE SIGNOS DE PUNTUACIon
+#CORRECCION DE SIGNOS DE PUNTUACION
 awk -f corregirPuntuacion.awk  $pathCompletoTexto >> $3
 
 #ordeno el archivo de salida de acuerdo a el numero de linea y elimino los duplicados 
 #generados al corregir mayusculas dos veces
-cat $3 > temp1
-sort -n temp1 | uniq > $3
+cat $3 > $temp1
+sort -n -k3 $temp1 | uniq > $3
 
 #verifico si hubo o no errores
 if [[ $(wc -l < $3) = 1 ]]; then
 	echo "SIN ERRORES" > $3
 fi
 
-rm temp
-rm temp1
-rm temp2
-rm temp3
+#elimino los archivos temporales
+rm $temp1
+rm $temp2
+rm $temp3
+rm $temp4

@@ -36,7 +36,7 @@ BEGIN{
 
 			#verifico que el caracter de cierre coincida con su caracter de apertura
 			if(signos[caracter] != pila[--elementos]){
-				printf ("%-6d %-30s %s\n",NR,pila[elementos] caracter,"PUNTUACION")
+				printf ("%-11s %-30s %d\n","PUNTUACION",pila[elementos] caracter,NR)
 			}
 		}
 
@@ -48,7 +48,7 @@ BEGIN{
 
 				#verifico que coincida con otra comilla de apertura
 				if(signos[caracter] != pila[--elementos])
-					printf ("%-6d %-30s %s\n",NR,pila[elementos] caracter,"PUNTUACION")
+					printf ("%-11s %-30s %d\n","PUNTUACION",pila[elementos] caracter,NR)
 				hayComilla--
 			}
 
