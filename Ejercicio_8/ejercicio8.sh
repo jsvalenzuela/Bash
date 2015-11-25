@@ -129,8 +129,8 @@ cat $pathCompletoTexto | sed -f eliminarCaracteres.sed > $temp1
 #Convierto los espacios en saltos de linea del texto, lo ordeno, elimino palabras
 #repetidas ignorando case sensitive y guardo el resultado en $temp3
 tr ' ' '\n' <  $temp1 | sort | uniq -i > $temp3
-#Ordeno el diccionario y lo almaceno en $temp2
-sort $pathCompletoDiccionario > $temp2
+#Ordeno el diccionario, convierto todo a minuscula y elimino los blancos
+sort $pathCompletoDiccionario | uniq -i | awk '{print tolower($0)}' | sed 's/^[ \t]*//;s/[ \t]*$//' > $temp2
 
 #Comparo ambos archivos y me quedo solo con las palabras que no estan en el diccionario
 #luego con awk elimino los numeros para tener solo palabras y almaceno en $temp4

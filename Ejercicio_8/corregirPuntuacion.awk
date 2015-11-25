@@ -25,9 +25,8 @@ BEGIN{
 		#si el caracter es algun signo de apertura
 		if(caracter == "(" || caracter == "[" || caracter == "{" || caracter == "¿" || 
 			caracter == "¡"){
-
-			#guardo el caracter en la pila
-			pila[elementos++] = caracter
+			#guardo el caracter en la pila junto al numero de linea
+			pila[++elementos] = caracter "|" NR
 		}
 
 		#si el caracter es algun signo de cierre
@@ -35,8 +34,9 @@ BEGIN{
 			caracter == "!"){
 
 			#verifico que el caracter de cierre coincida con su caracter de apertura
-			if(signos[caracter] != pila[--elementos]){
-				printf ("%-11s %-30s %d\n","PUNTUACION",pila[elementos] caracter,NR)
+			split(pila[elementos--], array, "|")
+			if(signos[caracter] != array[1]){
+				printf ("%-11s %-30s %d\n","PUNTUACION",array[1] caracter,NR)
 			}
 		}
 
@@ -47,16 +47,25 @@ BEGIN{
 			if(hayComilla > 0){
 
 				#verifico que coincida con otra comilla de apertura
-				if(signos[caracter] != pila[--elementos])
+				if(signos[caracter] != pila[elementos--])
 					printf ("%-11s %-30s %d\n","PUNTUACION",pila[elementos] caracter,NR)
 				hayComilla--
 			}
 
 			#si no hay comillas la agrego a la pila
 			else{
-				pila[elementos++] = caracter
+				pila[++elementos] = caracter
 				hayComilla++
 			}
 		}
 	}
+}
+END{
+	#si hay caracteres de mas
+	if(elementos > 0){
+		while(elementos > 0){
+			split (pila[elementos--], array, "|")
+			printf ("%-11s %-30s %d\n","PUNTUACION",array[1],array[2])
+		}
+	}	
 }
