@@ -134,13 +134,11 @@ ordenar(){
 	done
 }
 verificarPermisosDeLectura(){
-	if [ -r $1 ]
+	if [ ! -r $1 ]
 	then 
-		echo "$1 tiene permisos de lectura"
-		return
-	fi
 	echo "$1 no tiene permisos de lectura, por favor verifique los permisos y cambielos en caso de que sea deseado ser procesado ese archivo"
 	exit
+	fi
 }
 
 # *******************************FINALIZA EL BLOQUE DE FUNCIONES
@@ -148,7 +146,7 @@ verificarPermisosDeLectura(){
 #PREGUNTO SI SE PASO MINIMAMENTE UN PARAMETRO
 case $# in
 1)
-	comprobarAyuda
+	comprobarAyuda "$1"
 	verificarPermisosDeLectura "$1"
 	archivoSinIgnorar "$1"
 	;;
