@@ -12,13 +12,7 @@ END{
     segTrabajados=int(resultado %  3600)- int(minTrabajados) * 60 
     horasEstimadas=diasCantidadReporteMes * 8
     diferencia= resultado - horasEstimadas * 3600 
-    horaDiferencia=int(diferencia/3600) 
+    horaDiferencia=(diferencia/3600) 
     print diasCantidadReporteMes"|"horasTrabajadas":"minTrabajados":"segTrabajados"|"horaDiferencia >> ultimo
     
-  
-    #minDiferencia= int((diferencia - 3600 * horaDiferencia )/60)
-    #segDiferencia= int((diferencia %  3600)- (minDiferencia * 60))
-    #printf("Mes: %s-%2d|Dias trabajados: %d|Horas estimadas: %02d:00:00|Horas reales: %02d:%02d:%02d|Diferencia: %02d:%02d:%02d", mesesArray[mesParametro], mesParametro,diasCantidadReporteMes, horasEstimadas, horasTrabajadas,
-    #minTrabajados,segTrabajados,horaDiferencia, minDiferencia,segDiferencia)>>ultimo
-
 }

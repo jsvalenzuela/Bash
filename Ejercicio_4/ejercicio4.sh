@@ -21,7 +21,7 @@ ingreso_dia()
     	fi
     	
     	#si existiera un reporte mensual previo lo borro
-      sed -i "/|[0-9]$/d" $archivo
+      sed -i "/|[0-9.]*$/d" $archivo
 
       #grabo en la ultima linea 
     	echo "$fecha|">>$archivo 
@@ -60,6 +60,7 @@ reporte_mensual(){
 	     mes="$( cut -d '.' -f 2 <<< "$file" )"
        anio="$( cut -d '.' -f 1 <<< "$file" )"	
        if [ $2 = "$anio"  -a  $mes = "$3" ] ; then
+          reg=`tail -1 $file`
           echo $reg | awk -v mes=$mes -f reporteMensual.awk
     	 	  exit
        fi    
@@ -69,7 +70,16 @@ reporte_mensual(){
 
 }
 reporte_anual(){
- 
+ echo
+ echo "         REPORTE ANUAL"
+ echo
+
+ diasTrabajados=0
+ horasReales=0
+ diferencia=0
+
+ temp=$(mktemp)
+
  dir=$(dir -1)
  for file in $dir;
   do
@@ -78,12 +88,16 @@ reporte_anual(){
     #Si es un archivo
     if [ -f $file ]; then
 	    anio="$( cut -d '.' -f 1 <<< "$file" )"
+      mes="$( cut -d '.' -f 2 <<< "$file" )"
     	if [ "$3" = "$anio" ]; then
-	 	  echo `tail -1 $file`
-        fi    
+	 	     reg=`tail -1 $file`
+         echo $reg >> $temp
+      fi    
     fi
    fi
  done
+ cat $temp | awk -f "reporteAnual.awk"
+ rm $temp
 }
 
 scriptErrorParametro(){
