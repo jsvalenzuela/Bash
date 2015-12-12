@@ -95,7 +95,6 @@ func_clear()
  
 salir()
 {
-	rm -f $TEMP 2>/dev/null
 	echo "Demonio Finalizado."
 	exit 0
 }
