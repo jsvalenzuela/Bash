@@ -82,7 +82,7 @@ func_stop()
 		#señal de STOP (19)
 		kill -SIGTERM $pid
 		#Elimino el archivo temporal con el PID del demonio
-		rm $TEMP
+		rm -f $TEMP 2>/dev/null
 		sleep 1 #Solo por cuestiones estéticas =P
     else
         echo "El demonio no fue instanciado"
